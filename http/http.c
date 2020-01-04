@@ -41,15 +41,55 @@ void http_request_free (http_request *req) {
     }
 }
 
-http_request * http_recv (int clientfd, char *bufptr) {
-    int n;
-    http_request *new_req = NULL;
-    n = recv(clientfd, bufptr, BUFSIZE, 0);
+void http_print(http_request *req) {
+    if (req) {
+        fprintf(stdout, "req->method %s, req->uri %s, req->qs %s, req->protocol %s\n",
+                req->method, req->uri, req->qs, req->protocol);
+    }
+}
+
+char *http_parse_method(const char* message) {
+    return "GET";
+}
+
+char *http_parse_uri(const char* message) {
+    return "/tuckerino";
+}
+
+http_request *http_request_new (const char *message) {
+    http_request *new = NULL;
+    new = (http_request *)malloc(sizeof(http_request));
+    if (new) {
+        new->method = http_parse_method(message);
+        new->uri = http_parse_uri(message);
+        new->qs = "Hello, this is QS";
+        new->protocol = "TuckProtocol";
+    }
+    return new;
+}
+
+void handle_http(int fd) {
+    http_request *req = NULL;
+    const int bufsize = 1 << 16;
+    char reqbuf[bufsize];
+    int n = recv (fd, reqbuf, bufsize, 0);
     if (n < 0) {
         perror("recv");
+        return;
     }
-    bufptr[n] = '\0';
-    return new_req;
+
+    printf("client %d message %s\n", fd, reqbuf);
+
+    req = http_request_new (reqbuf);
+
+    if (!req) {
+        fprintf("http_request_new(%s) failed\n", reqbuf);
+        return;
+    }
+
+    http_print(req);
+
+    http_request_free (req);
 }
 
 int main (int argc, char ** argv) {
@@ -83,6 +123,8 @@ int main (int argc, char ** argv) {
         uint8_t * ip = (uint8_t *)&sin->sin_addr.s_addr;
 
         fprintf(stdout, "Client connected from %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
+
+        handle_http(clientfd);
     }
     return 0;
 }
