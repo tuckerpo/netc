@@ -60,47 +60,5 @@ int main (int argc, char ** argv) {
         fprintf(stdout, "Client connected from %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
         echo (clientfd);
     }
-//    int sockfd, newsockfd, portno;
-//    socklen_t clilen;
-//    struct sockaddr_in server, client;
-//    int opt = 1;
-//
-//    if (argc < 2) {
-//        print_usage(argv);
-//    }
-//    portno = atoi(argv[1]);
-//
-//    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-//    if (sockfd < 0) {
-//        perror("sockfd");
-//        exit(1);
-//    }
-//
-//    memset(&server, 0, sizeof(server));
-//    server.sin_family = AF_INET;
-//    server.sin_addr.s_addr = htonl(INADDR_ANY);
-//    server.sin_port = htons(portno);
-//    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-//    if ( bind(sockfd, (struct sockaddr *) &server, sizeof(server)) < 0) {
-//        perror("bind");
-//        exit(1);
-//    }
-//
-//    if (listen(sockfd, BACKLOG) < 0) {
-//        perror("listen");
-//        exit(1);
-//    }
-//
-//    /* Serve forever. */
-//    while (1) {
-//        if ((newsockfd = accept(sockfd, (struct sockaddr *) &client, &clilen)) < 0) {
-//            perror("accept");
-//            exit(1);
-//        }
-//
-//        fprintf(stdout, "Client connected: %s\n", inet_ntoa(client.sin_addr));
-//        echo (newsockfd);
-//        close (newsockfd);
-//    }
     return 0;
 }
