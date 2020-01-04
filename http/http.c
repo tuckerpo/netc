@@ -12,18 +12,43 @@
 #define BACKLOG 10
 #define CRLF "\r\n"
 
+typedef struct {
+    char *method;
+    char *uri;
+    char *qs;
+    char *protocol;
+} http_request;
+
 void print_usage(char **argv) {
     fprintf(stdout, "Usage: %s <port number>\n", argv[0]);
     exit(1);
 }
 
-int http_recv (int clientfd, char *bufptr) {
+size_t filesize(const char *path) {
+    struct stat s;
+    stat (path, &s);
+    return s.st_size;
+}
+
+void http_request_free (http_request *req) {
+    if (req) {
+        if (req->method) free (req->method);
+        if (req->uri) free (req->uri);
+        if (req->qs) free (req->qs);
+        if (req->protocol) free (req->protocol);
+        free (req);
+    }
+}
+
+http_request * http_recv (int clientfd, char *bufptr) {
     int n;
+    http_request *new_req = NULL;
     n = recv(clientfd, bufptr, BUFSIZE, 0);
     if (n < 0) {
         perror("recv");
     }
-    return n;
+    bufptr[n] = '\0';
+    return new_req;
 }
 
 int echo(int clientfd) {
