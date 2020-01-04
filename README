@@ -1,0 +1,14 @@
+Getting less bad at network and socket programming.
+
+Done: 
+    - TCP Echo server
+
+TODO:
+    - Protocol servers (HTTP, FTP, etc)
+    - Multithreaded server
+    - Custom protocol
+    - Non-blocking socket programming
+    - Client server message (de)serialization
+    - Encryption
+
+
