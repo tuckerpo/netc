@@ -8,17 +8,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "net.h"
+#include "http.h"
 // 1 kB
 #define BUFSIZE 1 << 10
 #define BACKLOG 10
 #define CRLF "\r\n"
 
-typedef struct {
-    char *method;
-    char *uri;
-    char *qs;
-    char *protocol;
-} http_request;
 
 void print_usage(char **argv) {
     fprintf(stdout, "Usage: %s <port number>\n", argv[0]);
@@ -92,39 +87,4 @@ void handle_http(int fd) {
     http_request_free (req);
 }
 
-int main (int argc, char ** argv) {
-    int clientfd;
-    char clientip[INET_ADDRSTRLEN];
-    struct sockaddr_storage client_addr;
-    
-    if (argc < 2) {
-        print_usage (argv);
-    }
 
-    int socket = get_tcp_listener_sock(argv[1]); 
-
-    if (socket < 0) {
-        fprintf(stderr, "get_tcp_listener_socket(%s) failed\n", argv[1]);
-        return -1;
-    }
-    
-    while (1) {
-        socklen_t sin_size = sizeof (client_addr);
-
-        clientfd = accept (socket, (struct sockaddr *) &client_addr, &sin_size); 
-        /* Connection failed, keep on truckin` */
-        if (clientfd < 0) {
-            perror("accept");
-            continue;
-        }
-
-        struct sockaddr_in *sin = (struct sockaddr_in *) &client_addr;
-
-        uint8_t * ip = (uint8_t *)&sin->sin_addr.s_addr;
-
-        fprintf(stdout, "Client connected from %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
-
-        handle_http(clientfd);
-    }
-    return 0;
-}
