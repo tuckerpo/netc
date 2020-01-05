@@ -1,0 +1,13 @@
+Aim of project
+
+Small networking lib for Linux aimed at easy of use API.
+
+Sits on top of layer 5 providing either TCP, UDP or Unix sockets.
+
+Allow caller to choose which application protocol will sit on top of socket.
+
+Abstract away dirty networking syscall work.
+
+
+
+
