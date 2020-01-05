@@ -28,9 +28,8 @@ size_t filesize(const char *path) {
 
 void http_request_free (http_request *req) {
     if (req) {
-        if (req->method) free (req->method);
+        //if (req->method) free (req->method); // method not malloc'd
         if (req->uri) free (req->uri);
-        if (req->qs) free (req->qs);
         if (req->protocol) free (req->protocol);
         free (req);
     }
@@ -38,17 +37,51 @@ void http_request_free (http_request *req) {
 
 void http_print(http_request *req) {
     if (req) {
-        fprintf(stdout, "req->method %s, req->uri %s, req->qs %s, req->protocol %s\n",
-                req->method, req->uri, req->qs, req->protocol);
+        fprintf(stdout, "req->method %s, req->uri %s, req->protocol %s\n",
+                req->method, req->uri, req->protocol);
     }
 }
 
-char *http_parse_method(const char* message) {
-    return "GET";
+char *http_parse_protocol(const char *message) {
+    char *prot;
+    char *ret;
+    if ((prot = strstr(message, "HTTP")) != NULL) {
+        char *p = prot;
+        while (!isspace(*p)) p++;
+        ret = (char *)malloc ( sizeof(char) * (p - prot) + 1);
+        if (ret) {
+            strncpy(ret, prot, (p - prot));
+            ret[(p - prot)] = '\0';
+        }
+    }
+    return ret;
 }
 
-char *http_parse_uri(const char* message) {
-    return "/tuckerino";
+char *http_parse_uri(const char *message) {
+    char *uri;
+    char *ret;
+    if ((uri = strstr(message, "/")) != NULL) {
+        char *p = uri;
+        while (!isspace(*p)) p++;
+        ret = (char *)malloc(sizeof(char) * (p - uri) + 1);
+        if (ret) {
+            strncpy(ret, uri, (p - uri));
+            ret[(p - uri)] = '\0';
+        }
+    }
+    return ret;
+}
+
+char *http_parse_method(const char* message) {
+    char *method;
+    if ((method = strstr(message, "GET")) != NULL) {
+        method = "GET"; 
+    } else if ((method = strstr(message, "POST")) != NULL) {
+        method = "POST";
+    } else {
+        return method;
+    }
+    return method;
 }
 
 http_request *http_request_new (const char *message) {
@@ -57,8 +90,7 @@ http_request *http_request_new (const char *message) {
     if (new) {
         new->method = http_parse_method(message);
         new->uri = http_parse_uri(message);
-        new->qs = "Hello, this is QS";
-        new->protocol = "TuckProtocol";
+        new->protocol = http_parse_protocol(message);
     }
     return new;
 }
@@ -72,18 +104,16 @@ void handle_http(int fd) {
         perror("recv");
         return;
     }
-
-    printf("client %d message %s\n", fd, reqbuf);
+    reqbuf[n] = '\0';
 
     req = http_request_new (reqbuf);
 
     if (!req) {
-        fprintf("http_request_new(%s) failed\n", reqbuf);
+        fprintf(stdout, "http_request_new(%s) failed\n", reqbuf);
         return;
     }
 
     http_print(req);
-
     http_request_free (req);
 }
 

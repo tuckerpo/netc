@@ -5,7 +5,12 @@
 typedef struct {
     char *method;
     char *uri;
-    char *qs;
+    char *prot;
+} http_request_line;
+
+typedef struct {
+    char *method;
+    char *uri;
     char *protocol;
 } http_request;
 
