@@ -15,8 +15,6 @@ char *get_mime_type (char *buf) {
             *p = tolower(*p);
             p++;
         }
-        fprintf(stdout, "file extension of %s is %s\n", buf, extension);
-
     }
 
     if (strcmp(extension, "html") == 0 || strcmp(extension, "htm") == 0) {
