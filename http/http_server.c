@@ -9,17 +9,15 @@
 #include <unistd.h>
 
 #include "http.h"
-
+#include "net.h"
 
 int main (int argc, char ** argv) {
     int clientfd;
     char clientip[INET_ADDRSTRLEN];
     struct sockaddr_storage client_addr;
     
-    if (argc < 2) {
-        print_usage (argv);
-    }
-
+    if (argc < 2) return 1;
+    
     int socket = get_tcp_listener_sock(argv[1]); 
 
     if (socket < 0) {
