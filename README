@@ -2,9 +2,9 @@ Getting less bad at network and socket programming.
 
 Done: 
     - TCP Echo server
+    - Protocol servers (HTTP, FTP, etc)
 
 TODO:
-    - Protocol servers (HTTP, FTP, etc)
     - Multithreaded server
     - Custom protocol
     - Non-blocking socket programming
